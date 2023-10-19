@@ -1,0 +1,133 @@
+//swd下载，从下到上红黄棕橙
+
+
+#include "stm32f4xx.h"
+#include "sys.h"
+#include "delay.h"
+#include "usart.h"	
+
+#include "led.h"
+#include "key.h"
+#include "steer.h"
+#include "motor.h"
+#include "encoder.h"
+#include "usart2.h"
+#include "oled.h"
+#include "extix.h"
+#include "xunji.h"
+#include "motorpwm.h"
+
+#include "mpu6050.h"
+#include "inv_mpu.h"
+#include "inv_mpu_dmp_motion_driver.h" 
+
+int decoder_left,decoder_right;     //左右编码器的脉冲计数
+float pitch,roll,yaw; 				//欧拉角
+short aacx,aacy,aacz;				//加速度传感器原始数据
+short gyrox,gyroy,gyroz;			//陀螺仪原始数据
+int flag=0;		//循迹检测的结果变量
+
+
+int main(void)
+{
+	//int t=0;
+	//int temp;
+	
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置系统中断优先级分组2
+	delay_init(168);				//初始化延时函数
+	uart_init(115200);				//串口1用于与电脑通信，波特率115200
+	
+	LED_Init();						//初始化LED
+	BEEP_Init();					//初始化beep
+	KEY_Init();						//初始化KEY
+	steer_Init(200-1,8400-1);		//舵机初始化
+	Enable_Pin();					//电机使能开关初始化
+	//电机初始化,APB2时钟频率为168M，满PWM为16799，频率=168M/((16799+1)*(0+1))=10k
+	TIM1_PWM_Init(16799,0);
+	TIM9_PWM_Init(16799,0);
+	TIM10_PWM_Init(16799,0);
+	TIM11_PWM_Init(16799,0);
+	//编码器初始化
+	Encoder_Init_TIM2();
+	Encoder_Init_TIM3();	
+	Encoder_Init_TIM4();		
+	Encoder_Init_TIM5();
+	//usart2_init(9600);				//串口2用于与手机蓝牙通信，波特率9600
+ 	OLED_Init();					//初始化OLED
+	xunji_Init();
+	
+	MPU_Init();						//初始化MPU6050
+	mpu_dmp_init();					//DMP初始化
+	EXTIX_Init();					//MPU6050的INT的外部中断初始化
+
+	//舵机初始位置，需要更精密，那就调舵机定时器，使得为50-250
+	steer1=16;		//steer1为下面的舵机，为10时为竖直向上，越大就向左转，5—25
+	steer2=10;		//steer2为上面的舵机，为10时为竖直向上，越大就向前转，5—25
+	delay_ms(2000);
+	steer_run();
+  while(1)
+{
+	flag=xunji_detect();
+	if(EN==1)
+	{
+	motorrun(flag); //在这里面陀螺仪在变但不会显示
+	}else stop();
+	
+	
+	
+//	//检测延时用
+//	LED=0;
+//	delay_ms(5000);		
+//	LED=1;
+//	delay_ms(5000);
+//	
+//	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//if(KEY_Scan(0)==1)
+	//{
+	//	LED=!LED;
+	//}else delay_ms(10);//按键必须要有这个延时
+   // printf("t:%d\r\n",t);
+		//delay_ms(500);
+		//t++;
+//steer_run();
+	//usart2_detect()
+	//OLED_Show();
+//	PWMA1=16799;	
+//	PWMA2=10000;	//小于PWM值为高电平,pwm太小转不动，要1个为16799，另一个为16799-pwm
+//	temp=MPU_Get_Temperature();
+//	MPU_Get_Accelerometer(&aacx,&aacy,&aacz);
+//	MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz);
+//	mpu_dmp_get_data(&pitch,&roll,&yaw);
+//	
+//	OLED_Show();
+//	OLED_Display_On();
+//	OLED_ShowNumber(103,48,yaw,3,16);
+//	OLED_Refresh_Gram();
+//	delay_ms(10);
+
+	
+}
+}
+
+

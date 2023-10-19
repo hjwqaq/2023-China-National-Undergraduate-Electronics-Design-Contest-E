@@ -1,0 +1,157 @@
+#include "xunji.h"
+#include "led.h"
+#include "timer.h"
+#include "key.h"
+#include "delay.h"
+
+void run()
+{
+  frontleft1=1;frontleft2=0;
+  frontright1=1;frontright2=0;
+  behindleft1=1;behindleft2=0;
+  behindright1=1;behindright2=0;
+  EN1=47;
+  EN2=47;
+  EN3=47;
+  EN4=47;
+ }
+
+void back()
+{
+  frontleft1=0;frontleft2=1;
+  frontright1=0;frontright2=1;
+  behindleft1=0;behindleft2=1;
+  behindright1=0;behindright2=1;
+  EN1=30;
+  EN2=30;
+  EN3=30;
+  EN4=30;
+ }
+
+ void turnleftbig()
+{
+  frontleft1=0;frontleft2=1;
+  frontright1=1;frontright2=0;
+  behindleft1=0;behindleft2=1;
+  behindright1=1;behindright2=0;
+  EN1=140;
+  EN2=80;
+  EN3=140;
+  EN4=80;
+ }
+
+ void turnleftsmall()
+{
+  frontleft1=1;frontleft2=0;
+  frontright1=1;frontright2=0;
+  behindleft1=1;behindleft2=0;
+  behindright1=1;behindright2=0;
+  EN1=35;
+  EN2=60;
+  EN3=35;
+  EN4=60;
+ }
+
+ void turnrightbig() //大幅度
+{
+  frontleft1=1;frontleft2=0;
+  frontright1=0;frontright2=1;
+  behindleft1=1;behindleft2=0;
+  behindright1=0;behindright2=1;
+  EN1=80;
+  EN2=140;
+  EN3=80;
+  EN4=140;
+ }
+
+ void turnrightsmall()	//小幅度
+{
+  frontleft1=1;frontleft2=0;
+  frontright1=1;frontright2=0;
+  behindleft1=1;behindleft2=0;
+  behindright1=1;behindright2=0;
+  EN1=60;
+  EN2=35;
+  EN3=60;
+  EN4=35;
+ }
+
+ void doud()
+{
+  frontleft1=0;frontleft2=1;
+  frontright1=1;frontright2=0;
+  behindleft1=0;behindleft2=1;
+  behindright1=1;behindright2=0;
+  EN1=60;
+  EN2=80;
+  EN3=60;
+  EN4=80;
+ }
+ 
+ void stop()
+ {
+  frontleft1=0;frontleft2=0;
+  frontright1=0;frontright2=0;
+  behindleft1=0;behindleft2=0;
+  behindright1=0;behindright2=0;
+ }
+
+ 
+ void xunji()
+ {
+  static int time=0;
+  static int count=0;//静态变量，默认初始化为0，再次调用函数时不会再次为0，而是为上次值
+  unsigned char flag=0;
+  if((cgq1==0)&&(cgq2==0)&&(cgq3==0)&&(cgq4==0)&&(cgq5==0)) //00000,计数	
+	{count++;
+	delay_ms(1);
+	}		 
+  if((cgq1==0)&&(cgq2==0)&&(cgq3==0)&&(cgq4==1)&&(cgq5==1)) //00011  左大转弯
+  	flag=2;
+  if((cgq1==0)&&(cgq2==0)&&(cgq3==1)&&(cgq4==1)&&(cgq5==1)) //00111  左大转弯
+  	flag=2;
+  if((cgq1==0)&&(cgq2==1)&&(cgq3==1)&&(cgq4==1)&&(cgq5==1)) //01111 左大转弯
+  	flag=2;
+  if((cgq1==1)&&(cgq2==0)&&(cgq3==0)&&(cgq4==1)&&(cgq5==1)) //10011 左小转弯
+  	flag=1;
+  if((cgq1==1)&&(cgq2==0)&&(cgq3==1)&&(cgq4==1)&&(cgq5==1)) //10111 左大转弯
+  	flag=2;
+ if((cgq1==1)&&(cgq2==1)&&(cgq3==0)&&(cgq4==0)&&(cgq5==0)) //11000 右大转弯
+  	flag=4;
+ if((cgq1==1)&&(cgq2==1)&&(cgq3==0)&&(cgq4==0)&&(cgq5==1)) //11001 右小转弯
+  	flag=3;
+ if((cgq1==1)&&(cgq2==1)&&(cgq3==0)&&(cgq4==1)&&(cgq5==1)) //11011 直走
+  	flag=0;
+ if((cgq1==1)&&(cgq2==1)&&(cgq3==1)&&(cgq4==0)&&(cgq5==0)) //11100 右大转弯
+  	flag=4;
+ if((cgq1==1)&&(cgq2==1)&&(cgq3==1)&&(cgq4==0)&&(cgq5==1)) //11101 右大转弯
+  	flag=4;
+ if((cgq1==1)&&(cgq2==1)&&(cgq3==1)&&(cgq4==1)&&(cgq5==0)) //11110 右大转弯
+  	flag=4;
+ if((cgq1==1)&&(cgq2==1)&&(cgq3==1)&&(cgq4==1)&&(cgq5==1)) //11111 后退
+  	flag=5;
+
+if(count==6)
+{ flag=6;
+}
+
+
+		if(count>=2&&time<=200&&count<4)
+	{ beep=0;time++;
+	}else{
+		beep=1;
+	}
+	switch(flag)
+	{
+		case 0:run();break;
+		case 1:turnleftsmall();break;
+		case 2:turnleftbig();break;
+		case 3:turnrightsmall();break;
+		case 4:turnrightbig();break;
+		case 5:doud();break;
+		default:delay(4);stop();delay(1000000);break;
+	}
+
+
+ }}
+ 
